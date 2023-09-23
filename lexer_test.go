@@ -6,11 +6,12 @@ import (
 	"io"
 	"math/big"
 	"os"
-	"regexp"
 	"strconv"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/grafana/regexp"
 )
 
 func TestInvalidTokenName(t *testing.T) {

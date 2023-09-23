@@ -29,15 +29,8 @@ type fuzzWalker struct{}
 
 func (w *fuzzWalker) Statement(st *Statement) error {
 	switch st.Name() {
-	case "server_name",
-		"listen",
-		"proxy_pass",
-		"add_header",
-		"user",
-		"daemon",
-		"log_format",
-		"acces_log",
-		"error_log":
+	case "server_name", "listen", "proxy_pass", "add_header",
+		"user", "daemon", "log_format", "acces_log", "error_log":
 		return nil
 	default:
 		return fmt.Errorf("invalid statement name: %s", st.Name())
@@ -46,11 +39,7 @@ func (w *fuzzWalker) Statement(st *Statement) error {
 
 func (w *fuzzWalker) EnterSection(sec *Section) (Walker, error) {
 	switch sec.Name() {
-	case "http",
-		"server",
-		"location",
-		"upstream",
-		"stream":
+	case "http", "server", "location", "upstream", "stream":
 		return w, nil
 	default:
 		return nil, fmt.Errorf("invalid section name: %s", sec.Name())

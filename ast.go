@@ -2,10 +2,11 @@ package codf // import "go.spiff.io/codf"
 
 import (
 	"math/big"
-	"regexp"
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/grafana/regexp"
 )
 
 // Node is any parsed element of a codf document. This includes the Section, Statement, Literal,

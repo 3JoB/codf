@@ -7,11 +7,12 @@ import (
 	"fmt"
 	"io"
 	"math/big"
-	"regexp"
 	"strconv"
 	"strings"
 	"time"
 	"unicode"
+
+	"github.com/grafana/regexp"
 )
 
 // DefaultPrecision is the default precision of TFloat tokens produced by Lexer.

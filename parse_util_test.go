@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"math/big"
 	"reflect"
-	"regexp"
 	"testing"
 	"time"
+
+	"github.com/grafana/regexp"
 )
 
 func mkdec(str string) *Literal {
