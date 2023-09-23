@@ -15,7 +15,8 @@ func (f mapFunc) Map(n Node) (Node, error) {
 	return f(n)
 }
 
-func (f mapFunc) Statement(*Statement) error            { return nil }
+func (f mapFunc) Statement(*Statement) error { return nil }
+
 func (f mapFunc) EnterSection(*Section) (Walker, error) { return f, nil }
 
 type docWalker struct {
@@ -45,7 +46,7 @@ func (d *docWalker) ExitSection(_ Walker, sec *Section, parent ParentNode) error
 	return nil
 }
 
-func sectionWalker(name string, children ...interface{}) *docWalker {
+func sectionWalker(name string, children ...any) *docWalker {
 	w := &docWalker{
 		name:       name,
 		statements: map[string]struct{}{},

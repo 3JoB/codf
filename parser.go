@@ -218,7 +218,7 @@ func (p *Parser) beginSegment(tok Token) (tokenConsumer, error) {
 		return nil, p.closeError(tok)
 	case TWord:
 		// Start statement
-		stmt := &Statement{NameTok: &Literal{tok}}
+		stmt := &Statement{NameTok: &Literal{Tok: tok}}
 		p.pushContext(stmt)
 		return skipWhitespace(p.parseStatement), nil
 	}
@@ -324,7 +324,7 @@ func (p *Parser) parseStatement(tok Token) (tokenConsumer, error) {
 		TBoolean,
 		TRegexp:
 
-		if err := p.context().(segmentNode).addExpr(&Literal{tok}); err != nil {
+		if err := p.context().(segmentNode).addExpr(&Literal{Tok: tok}); err != nil {
 			return nil, err
 		}
 		return skipWhitespace(p.parseStatement), nil
@@ -337,11 +337,12 @@ func (p *Parser) parseStatement(tok Token) (tokenConsumer, error) {
 type ExpectedError struct {
 	// Tok is the token that did not meet expectations.
 	Tok Token
+
 	// Msg is a message describing the expected token(s).
 	Msg string
 }
 
-func unexpected(tok Token, msg string, args ...interface{}) *ExpectedError {
+func unexpected(tok Token, msg string, args ...any) *ExpectedError {
 	return &ExpectedError{
 		Tok: tok,
 		Msg: fmt.Sprintf(msg, args...),

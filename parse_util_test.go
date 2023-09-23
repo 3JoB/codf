@@ -40,7 +40,7 @@ func mkregex(str string) *Literal {
 	}
 }
 
-func mkexpr(arg interface{}) ExprNode {
+func mkexpr(arg any) ExprNode {
 	switch arg := arg.(type) {
 	case ExprNode:
 		return arg
@@ -58,7 +58,7 @@ func mkexpr(arg interface{}) ExprNode {
 		return &Literal{Tok: Token{Kind: TString, Value: arg}}
 	case []ExprNode:
 		return &Array{Elems: arg}
-	case []interface{}:
+	case []any:
 		return &Array{Elems: mkexprs(arg...)}
 	}
 	panic(fmt.Errorf("unsupported type %T", arg))
@@ -91,7 +91,7 @@ func mkword(s string) *Literal {
 	}
 }
 
-func mkmap(args ...interface{}) *Map {
+func mkmap(args ...any) *Map {
 	if len(args)%2 == 1 {
 		panic("mkmap must receive arguments in pairs of (string, value); got valueless key")
 	}
@@ -109,7 +109,7 @@ func mkmap(args ...interface{}) *Map {
 	return &Map{Elems: elems}
 }
 
-func mkexprs(args ...interface{}) []ExprNode {
+func mkexprs(args ...any) []ExprNode {
 	e := make([]ExprNode, len(args))
 	for i, arg := range args {
 		e[i] = mkexpr(arg)
@@ -124,8 +124,8 @@ func doc() *Document {
 }
 
 type testNode interface {
-	statement(name string, args ...interface{}) testNode
-	section(name string, args ...interface{}) testNode
+	statement(name string, args ...any) testNode
+	section(name string, args ...any) testNode
 	Doc() *Document
 	up() testNode
 }
@@ -144,7 +144,7 @@ func (s *childSection) up() testNode {
 	return s.parent
 }
 
-func (s *childSection) statement(name string, args ...interface{}) testNode {
+func (s *childSection) statement(name string, args ...any) testNode {
 	ch := &Statement{
 		NameTok: mkexpr(name).(*Literal),
 		Params:  mkexprs(args...),
@@ -153,7 +153,7 @@ func (s *childSection) statement(name string, args ...interface{}) testNode {
 	return s
 }
 
-func (s *childSection) section(name string, args ...interface{}) testNode {
+func (s *childSection) section(name string, args ...any) testNode {
 	ch := &Section{
 		NameTok:  mkexpr(name).(*Literal),
 		Params:   mkexprs(args...),
@@ -175,7 +175,7 @@ func (d *Document) up() testNode {
 	return d
 }
 
-func (d *Document) statement(name string, args ...interface{}) testNode {
+func (d *Document) statement(name string, args ...any) testNode {
 	ch := &Statement{
 		NameTok: mkexpr(name).(*Literal),
 		Params:  mkexprs(args...),
@@ -184,7 +184,7 @@ func (d *Document) statement(name string, args ...interface{}) testNode {
 	return d
 }
 
-func (d *Document) section(name string, args ...interface{}) testNode {
+func (d *Document) section(name string, args ...any) testNode {
 	ch := &Section{
 		NameTok:  mkexpr(name).(*Literal),
 		Params:   mkexprs(args...),
@@ -198,8 +198,8 @@ func (d *Document) section(name string, args ...interface{}) testNode {
 	}
 }
 
-func objectsEqual(t *testing.T, prefix string, got, want interface{}) (ok bool) {
-	fail := func(format string, args ...interface{}) {
+func objectsEqual(t *testing.T, prefix string, got, want any) (ok bool) {
+	fail := func(format string, args ...any) {
 		ok = false
 		t.Error(prefix + ": " + fmt.Sprintf(format, args...))
 	}

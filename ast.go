@@ -40,7 +40,7 @@ type segmentNode interface {
 // rational, or other parse-able value.
 type ExprNode interface {
 	Node
-	Value() interface{}
+	Value() any
 }
 
 // parseNode is any Node that can be used in parsing as a context.
@@ -60,7 +60,8 @@ type parentNode interface {
 type Document struct {
 	// Name is usually a filename assigned by the user. It is not assigned by a parser and is
 	// just metadata on the Document.
-	Name     string
+	Name string
+
 	Children []Node // Sections and Statements that make up the Document.
 }
 
@@ -220,6 +221,7 @@ func (s *Section) addChild(node Node) {
 type Map struct {
 	StartTok Token
 	EndTok   Token
+
 	// Elems is a map of the string keys to their key-value pairs.
 	Elems map[string]*MapEntry
 }
@@ -250,7 +252,7 @@ func (m *Map) Token() Token {
 
 // Value returns the map's elements as its value.
 // This is always a value of the type map[string]*MapEntry.
-func (m *Map) Value() interface{} {
+func (m *Map) Value() any {
 	return m.Elems
 }
 
@@ -307,7 +309,7 @@ func (a *Array) Token() Token {
 
 // Value returns the elements of the array.
 // This is always a value of the type []ExprNode.
-func (a *Array) Value() interface{} {
+func (a *Array) Value() any {
 	return a.Elems
 }
 
@@ -319,8 +321,10 @@ type MapEntry struct {
 	// There can be gaps in Ord for a range. Duplicate keys
 	// increase Ord and replace the conflicting MapEntry.
 	Ord uint
+
 	// Key and Val are the key-value pair.
 	Key ExprNode
+
 	Val ExprNode
 }
 
@@ -347,7 +351,7 @@ func (m *MapEntry) Name() string {
 
 // Value returns the MapEntry's value as a string.
 // The entire AST is invalid if this returns nil.
-func (m *MapEntry) Value() interface{} {
+func (m *MapEntry) Value() any {
 	return m.Val.Value()
 }
 
@@ -372,7 +376,7 @@ func (l *Literal) Token() Token {
 // Depending on the token, this can be a value of type string, boolean, *big.Int, *big.Float,
 // *big.Rat, time.Duration, or *regexp.Regexp.
 // The entire AST is invalid if this returns nil.
-func (l *Literal) Value() interface{} {
+func (l *Literal) Value() any {
 	return l.Tok.Value
 }
 
@@ -380,7 +384,7 @@ func (l *Literal) Value() interface{} {
 // If node is an ExprNode, it will return that node's value.
 // Otherwise, it will return any value associated with the node's token.
 // It may be nil for nodes whose token is punctuation or an opening brace or bracket.
-func Value(node Node) interface{} {
+func Value(node Node) any {
 	switch node := node.(type) {
 	case ExprNode:
 		return node.Value()

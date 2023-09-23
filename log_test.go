@@ -4,7 +4,7 @@ import "testing"
 
 // logf is a pointer to the current test's Logf function.
 // Only used for debugging.
-var logf = func(string, ...interface{}) {}
+var logf = func(string, ...any) {}
 
 func setlogf(t *testing.T) func() {
 	temp := logf

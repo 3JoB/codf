@@ -51,7 +51,6 @@ type parseTestCase struct {
 
 func (p parseTestCase) RunSubtest(t *testing.T) {
 	t.Run(p.Name, p.Run)
-
 }
 
 func (p parseTestCase) Run(t *testing.T) {

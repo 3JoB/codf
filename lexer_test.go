@@ -26,7 +26,7 @@ func regexCase(rx string) tokenCase {
 	return tokenCase{
 		Token: Token{
 			Kind:  TRegexp,
-			Raw:   []byte("#/" + strings.Replace(rx, "/", "\\/", -1) + "/"),
+			Raw:   []byte("#/" + strings.ReplaceAll(rx, "/", "\\/") + "/"),
 			Value: regexp.MustCompile(rx),
 		},
 	}
@@ -126,7 +126,7 @@ func quoteCase(str string) tokenCase {
 	}
 }
 
-func compareValue(l, r interface{}) bool {
+func compareValue(l, r any) bool {
 	switch ll := l.(type) {
 	case nil:
 		// Don't compare -- nil isn't a value and only used for punctuation.
@@ -1336,7 +1336,7 @@ func TestReaderWrapping(t *testing.T) {
 		}
 		defer fi.Close()
 
-		lexer := NewLexer(struct{ io.Reader }{fi})
+		lexer := NewLexer(struct{ io.Reader }{Reader: fi})
 		lexer.Name = "no-name"
 
 		want.RunWithLexer(t, lexer)

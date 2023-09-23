@@ -1,3 +1,3 @@
-module go.spiff.io/codf
+module github.com/3JoB/codf
 
-go 1.13
+go 1.21.1

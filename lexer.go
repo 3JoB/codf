@@ -121,26 +121,25 @@ var tokenNames = []string{
 // Depending on the Kind, the Token must have a Value of the types described below. For all other
 // TokenKinds not in the table below, a Value is not expected.
 //
-//      | Kind      | Value Type     |
-//      |-----------+----------------|
-//      | TWord     | string         |
-//      | TString   | string         |
-//      | TRegexp   | *regexp.Regexp |
-//      | TBoolean  | bool           |
-//      | TFloat    | *big.Float     |
-//      | TRational | *big.Rat       |
-//      | TInteger  | *big.Int       |
-//      | THex      | *big.Int       |
-//      | TOctal    | *big.Int       |
-//      | TBinary   | *big.Int       |
-//      | TBaseInt  | *big.Int       |
-//      | TDuration | time.Duration  |
-//
+//	| Kind      | Value Type     |
+//	|-----------+----------------|
+//	| TWord     | string         |
+//	| TString   | string         |
+//	| TRegexp   | *regexp.Regexp |
+//	| TBoolean  | bool           |
+//	| TFloat    | *big.Float     |
+//	| TRational | *big.Rat       |
+//	| TInteger  | *big.Int       |
+//	| THex      | *big.Int       |
+//	| TOctal    | *big.Int       |
+//	| TBinary   | *big.Int       |
+//	| TBaseInt  | *big.Int       |
+//	| TDuration | time.Duration  |
 type Token struct {
 	Start, End Location
 	Kind       TokenKind
 	Raw        []byte
-	Value      interface{}
+	Value      any
 }
 
 // Location describes a location in an input byte sequence.
@@ -229,16 +228,22 @@ const (
 const (
 	// LexNoRegexps disables regular expressions.
 	LexNoRegexps LexerFlag = 1 << iota
+
 	// LexNoBools disables true/false/yes/no parsing.
 	LexNoBools
+
 	// LexNoDurations disables durations.
 	LexNoDurations
+
 	// LexNoRationals disables rationals.
 	LexNoRationals
+
 	// LexNoFloats disables floating point numbers.
 	LexNoFloats
+
 	// LexNoBaseInts disables non-base-10 number forms.
 	LexNoBaseInts
+
 	// LexNoNumbers disables all numbers.
 	// Implies NoBaseInts, NoFloats, NoRationals, and NoDurations
 	LexNoNumbers
@@ -261,6 +266,7 @@ type Lexer struct {
 	// Precision is the precision used in *big.Float when taking the actual value of a TFloat
 	// token.
 	Precision uint
+
 	// Name is the name of the token source currently being lexed. It is used to identify the
 	// source of a location by name. It is not necessarily a filename, but usually is.
 	//
@@ -313,7 +319,7 @@ func runeReader(r io.Reader) io.RuneReader {
 	case io.RuneReader:
 		return r
 	case NamedReader:
-		return nameRuneReader{bufio.NewReader(r), r.Name}
+		return nameRuneReader{Reader: bufio.NewReader(r), namefn: r.Name}
 	default:
 		return bufio.NewReader(r)
 	}
@@ -519,7 +525,7 @@ func isNonZero(r rune) bool {
 }
 
 func isDecimal(r rune) bool {
-	return '0' <= r && r <= '9'
+	return r >= '0' && r <= '9'
 }
 
 func isBinary(r rune) bool {
@@ -527,13 +533,13 @@ func isBinary(r rune) bool {
 }
 
 func isOctal(r rune) bool {
-	return '0' <= r && r <= '7'
+	return r >= '0' && r <= '7'
 }
 
 func isHex(r rune) bool {
 	return isDecimal(r) ||
-		('a' <= r && r <= 'f') ||
-		('A' <= r && r <= 'F')
+		(r >= 'a' && r <= 'f') ||
+		(r >= 'A' && r <= 'F')
 }
 
 // Branches

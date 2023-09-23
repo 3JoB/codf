@@ -136,10 +136,13 @@ type WalkError struct {
 	// Document is the document the context and node were found in, if the Walk root was
 	// a document.
 	Document *Document
+
 	// Context is the ParentNode that Node is a child of.
 	Context ParentNode
+
 	// Node is the node that was encountered when the error occurred.
 	Node Node
+
 	// Err is the error that a Walker returned.
 	Err error
 }
